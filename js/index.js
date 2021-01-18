@@ -21,10 +21,31 @@
 
 window.addEventListener('DOMContentLoaded', () => {
   const start = document.querySelector('#start');
+  const resetBtn = document.querySelector('#btnReset');
+  const submitBtn = document.querySelector('#btnSubmit');
+  
   start.addEventListener('click', function (e) {
+  //start.addEventListener('click', (event) {
+     // Prevent default action of refreshing the screen
+     //event.preventDefault();
     document.querySelector('#quizBlock').style.display = 'block';
     start.style.display = 'none';
-  });
+    var count = 30;
+    var interval = setInterval(function(){
+      document.getElementById('time').innerHTML=count;
+      count--;
+      if (count === 0){
+        clearInterval(interval);
+        document.getElementById('time').innerHTML='Done';
+        // or...
+        //alert("You're out of time!");
+        calculateScore();
+
+      }
+    }, 1000);  
+
+  } 
+  );
   // quizArray QUESTIONS & ANSWERS
   // q = QUESTION, o = OPTIONS, a = CORRECT ANSWER
   // Basic ideas from https://code-boxx.com/simple-javascript-quiz/
@@ -44,7 +65,28 @@ window.addEventListener('DOMContentLoaded', () => {
       o: ['Sydney', 'Canberra', 'Melbourne', 'Perth'],
       a: 1,
     },
+    {
+      q: 'Trivia Question: How many blue stripes are there on the U.S. flag',
+
+    o:['6','7','13','0'],
+    a:2,
+    },
+    {
+      q: 'Which country held the 2016 Summer Olympics?',
+
+    o:['China','Italy','Brazil','Russia'],
+    a:2,
+
+    }
   ];
+
+//function to reset form
+function resetForm(){
+ 
+  window.location.reload();
+}
+
+
 
   // function to Display the quiz questions and answers from the object
   const displayQuiz = () => {
@@ -66,25 +108,45 @@ window.addEventListener('DOMContentLoaded', () => {
   // Calculate the score
   const calculateScore = () => {
     let score = 0;
+    document.getElementById('time').innerHTML='Done';
     quizArray.map((quizItem, index) => {
       for (let i = 0; i < 4; i++) {
         //highlight the li if it is the correct answer
         let li = `li_${index}_${i}`;
         let r = `radio_${index}_${i}`;
+       
         liElement = document.querySelector('#' + li);
         radioElement = document.querySelector('#' + r);
 
+
         if (quizItem.a == i) {
           //change background color of li element here
+          
+          liElement.style.backgroundColor = 'lightblue';
+          
         }
-
-        if (radioElement.checked) {
+        //if the original answer and answer checked is same,score gets added
+        if (radioElement.checked && quizItem.a == i ) {
           // code for task 1 goes here
+          liElement.style.backgroundColor = 'lightgreen';
+          score++;
         }
       }
+      
     });
+    let scoreMessage = document.querySelector('#scoreMesg');
+    scoreMessage.innerHTML = "Your score is: "+score;
+    scoreMessage.style.display = "block"; 
+    scoreMessage.style.backgroundColor = 'blueviolet'; 
+    scoreMessage.style.color = 'white';
   };
 
   // call the displayQuiz function
   displayQuiz();
+  
+  submitBtn.addEventListener('click', calculateScore);
+  // Add an 'onclick' event listener to the reset button
+  resetBtn.addEventListener('click', resetForm);
+    
+
 });
